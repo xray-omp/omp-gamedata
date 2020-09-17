@@ -1,0 +1,11 @@
+/ai
+/anims
+/levels
+/meshes
+/shaders
+/sounds
+/spawns
+/textures
+*.docx
+*.bak
+*.xr
