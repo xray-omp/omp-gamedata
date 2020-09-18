@@ -1,0 +1,4 @@
+{
+    "files.encoding": "windows1251",
+    "files.associations": { "*.ltx": "ini", "*.script": "lua" }
+}
