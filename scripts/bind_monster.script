@@ -3,6 +3,10 @@
 -----------------------------------------------------------------------------------
 
 function bind(obj)
+	if not OnServer() then
+		return
+	end
+	
 	printf("_bp: monster.bind: name='%s', id='%d'", obj:name(), obj:id())
 
 	-- Для спауна
