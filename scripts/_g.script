@@ -112,7 +112,7 @@ end
 
 function server_msg(fmt,...)
 	if OnServer() then
-		print_msg(fmt,...)
+		printf_msg(fmt,...)
 	end
 end
 
