@@ -26,6 +26,29 @@ level_doors 		= {}  -- Содержит список всех дверей на уровне (чтобы нпс могли по
 no_weap_zones 		= {}
 spawned_vertex_by_id= {}
 
+function reset_globals()
+	zone_by_name        = {}
+	script_ids			= {}
+	storage             = {}
+	actor               = nil
+	heli                = {}
+	camp_storage        = {}
+	story_by_id	        = {}
+	smart_terrain_by_id = {}
+	info_restr          = {}
+	strn_by_respawn     = {}
+	heli_enemies        = {}
+	heli_enemy_count    = 0
+	anim_obj_by_name	= {}
+	goodwill 			= {sympathy = {}, relations = {}}
+	story_object		= {}
+	signal_light		= {}
+	offline_objects		= {}
+	anomaly_by_name     = {}
+	level_doors 		= {}
+	no_weap_zones 		= {}
+	spawned_vertex_by_id= {}
+end
 
 
 function add_enemy( obj )
