@@ -161,6 +161,9 @@ function npc_sound:callback(npc_id)
 	end
 end
 function npc_sound:play(npc_id, faction, point, msg)
+	if IsDedicated() then
+		return false
+	end
 	local npc = db.storage[npc_id] and db.storage[npc_id].object
 
 	if npc == nil then
@@ -414,6 +417,10 @@ function actor_sound:is_playing ()
 end
 function actor_sound:play(npc, faction, point, msg)
 	--printf("PLAY ACTOR SOUND")
+	if IsDedicated() then
+		return false
+	end
+	
 	if not self.can_play_sound then
 		printf("self.can_play_sound == false")
 		return false
@@ -592,8 +599,11 @@ function object_sound:is_playing ()
 	end
 end
 function object_sound:play(obj_id, faction, point, msg)
+	if IsDedicated() then
+		return false
+	end
+	
 	local obj = db.storage[obj_id] and db.storage[obj_id].object
-
 	if obj == nil then
 		return false
 	end
@@ -745,6 +755,10 @@ function looped_sound:play(obj_id)
 	local obj = db.storage[obj_id].object
 	if obj == nil then
 		return
+	end
+	
+	if IsDedicated() then
+		return false
 	end
 
 	self.snd_obj = sound_object(self.sound)
