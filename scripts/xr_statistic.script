@@ -510,15 +510,17 @@ function keeper_of_secrets_functor()
 end
 
 function marked_by_zone_functor()
-	if has_alife_info("actor_marked_by_zone_3_times") then
-		return true
-	end
-	local counter_name = "actor_marked_by_zone_cnt"
-	local cnt_value = xr_logic.pstor_retrieve(db.actor, counter_name, 0)
-	if cnt_value > 2 then
-		db.actor:give_info_portion("actor_marked_by_zone_3_times")
-		news_manager.send_tip(db.actor, "st_ach_marked_by_zone", nil, "marked_by_zone", nil, nil)
-		return true
+	if IsGameTypeSingle() then
+		if has_alife_info("actor_marked_by_zone_3_times") then
+			return true
+		end
+		local counter_name = "actor_marked_by_zone_cnt"
+		local cnt_value = xr_logic.pstor_retrieve(db.actor, counter_name, 0)
+		if cnt_value > 2 then
+			db.actor:give_info_portion("actor_marked_by_zone_3_times")
+			news_manager.send_tip(db.actor, "st_ach_marked_by_zone", nil, "marked_by_zone", nil, nil)
+			return true
+		end
 	end
 
 	return false
