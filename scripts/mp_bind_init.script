@@ -1,0 +1,16 @@
+
+function mp_actor_init (obj)
+	print_msg('mp_actor_init')
+	if level.game_id() ~= game_types.eGameIDFreeMp then
+		return
+	end
+	if not IsDedicated() then	
+		if obj:id() == level.get_g_actor_id() then
+			obj:bind_object(mp_bind_actor.mp_actor_binder(obj))
+		else
+			obj:bind_object(mp_bind_player.mp_player_binder(obj))
+		end
+	else
+		obj:bind_object(mp_bind_player.mp_player_binder(obj))
+	end
+end
