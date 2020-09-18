@@ -28,6 +28,7 @@ end
 function mp_actor_binder:reinit()
 	object_binder.reinit(self)
 	
+	self.object:set_callback(callback.use_object, self.use_callback, self)
 	self.object:set_callback(callback.on_item_take, self.on_item_take, self)
 	self.object:set_callback(callback.on_item_drop, self.on_item_drop, self)
 	self.object:set_callback(callback.death, self.death_callback, self)
@@ -46,9 +47,14 @@ function mp_actor_binder:on_item_drop(obj)
 	printf_msg("[%s] drop item [%s]", self.object:name(), obj:name())
 end
 
+function mp_actor_binder:use_callback(obj)
+	printf_msg("[%s] use [%s]", self.object:name(), obj:name())
+end
+
 function mp_actor_binder:death_callback(victim, who)
 	printf_msg("[%s] death. Killer [%s]", self.object:name(), who:name())
 
+	victim:set_callback(callback.use_object, nil)
 	victim:set_callback(callback.on_item_take, nil)
 	victim:set_callback(callback.on_item_drop, nil)
 	victim:set_callback(callback.death, nil)
