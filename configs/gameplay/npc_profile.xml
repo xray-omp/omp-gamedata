@@ -19,6 +19,12 @@
 		<class>actor_visual_stalker</class>
 	</character>
 
+	<!-- mp profiles -->
+	<character id="mp_default_stalker">
+		<class>mp_default_stalker</class>
+	</character>
+
+
 	<!-- sim profiles -->
 	<!-- sim duty -->
 	<character id="sim_default_duty_0">
