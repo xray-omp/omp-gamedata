@@ -1397,13 +1397,23 @@ function se_smart_terrain:try_respawn()
 	if self.last_respawn_update == nil or curr_time:diffSec(self.last_respawn_update) > RESPAWN_IDLE then
 		self.last_respawn_update = curr_time
 
-		if self.sim_avail ~= nil and xr_logic.pick_section_from_condlist(db.actor or alife():actor(), self, self.sim_avail) ~= "true" then return end
+		if IsGameTypeSingle()
+			and self.sim_avail ~= nil
+			and xr_logic.pick_section_from_condlist(db.actor or alife():actor(), self, self.sim_avail) ~= "true"
+		then
+			return
+		end
 
 		local squad_count = smart_terrain_squad_count(self.board.smarts[self.id].squads)
 		if self.max_population <= squad_count then printf("%s cannot respawn due to squad_count %s of %s", self:name(), self.max_population, squad_count) return end
 
-		local dist_to_actor = alife():actor().position:distance_to_sqr(self.position)
-		if dist_to_actor < RESPAWN_RADIUS^2 then printf("%s cannot respawn due to distance", self:name()) return end
+		if IsGameTypeSingle() then
+			local dist_to_actor = alife():actor().position:distance_to_sqr(self.position)
+			if dist_to_actor < RESPAWN_RADIUS^2 then
+				printf("%s cannot respawn due to distance", self:name())
+				return
+			end
+		end
 
 		self:call_respawn()
 	end
