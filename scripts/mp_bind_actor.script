@@ -14,6 +14,8 @@ function mp_actor_binder:net_spawn(data)
 	if object_binder.net_spawn(self,data) == false then
 		return false	
 	end
+	db.del_mp_actor()
+	db.add_mp_actor(self.object)
 	return true
 end
 
@@ -21,12 +23,18 @@ end
 
 function mp_actor_binder:net_destroy()
 	printf_msg("[%s] net_destroy", self.object:name())
+	-- net_destroy может быть вызывать после респавна и установки нового mp_actor
+	if db.mp_actor and db.mp_actor:id() == self.object:id() then
+		db.del_mp_actor()
+	end
 	object_binder.net_destroy(self)
 end
 ----------------------------------------------------------------------------------------------------------------------
 
 function mp_actor_binder:reinit()
 	object_binder.reinit(self)
+	
+	db.storage[self.object:id()] = { }
 	
 	self.object:set_callback(callback.use_object, self.use_callback, self)
 	self.object:set_callback(callback.on_item_take, self.on_item_take, self)
