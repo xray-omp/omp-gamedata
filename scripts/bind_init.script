@@ -13,3 +13,11 @@ function mp_actor_init (obj)
 		obj:bind_object(mp_bind_player.mp_player_binder(obj))
 	end
 end
+
+function actor_init(obj)
+	if IsGameTypeSingle() then
+		bind_stalker.actor_init(obj)
+	else
+		mp_bind_single_actor.actor_init(obj)
+	end
+end
