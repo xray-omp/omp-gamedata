@@ -1,6 +1,5 @@
 
 function mp_actor_init (obj)
-	print_msg('mp_actor_init')
 	if level.game_id() ~= game_types.eGameIDFreeMp then
 		return
 	end
