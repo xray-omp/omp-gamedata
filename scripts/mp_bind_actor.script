@@ -1,10 +1,11 @@
 
+local weapon_hide = {}
+
 ----------------------------------------------------------------------------------------------------------------------
 class "mp_actor_binder" (object_binder)
 ----------------------------------------------------------------------------------------------------------------------
 
 function mp_actor_binder:__init (obj) super(obj)
-	printf_msg('mp_actor_binder:__init');
 end
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -16,6 +17,10 @@ function mp_actor_binder:net_spawn(data)
 	end
 	db.del_mp_actor()
 	db.add_mp_actor(self.object)
+	
+	weapon_hide = {}
+	self.weapon_hide = false
+	
 	return true
 end
 
@@ -44,7 +49,20 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 
 function mp_actor_binder:update(delta)
+	object_binder.update(self, delta)
 	
+	-- Апдейт прятание оружия игрока в зоне sr_no_weapon
+	if check_for_weapon_hide_by_zones() == true then
+		if self.weapon_hide == false then
+			self.object:hide_weapon()
+			self.weapon_hide = true
+		end
+	else
+		if self.weapon_hide == true then
+			self.object:restore_weapon()
+			self.weapon_hide = false
+		end
+	end
 end
 
 function mp_actor_binder:on_item_take(obj)
@@ -77,6 +95,25 @@ function mp_actor_binder:load(reader)
 	object_binder.load(self, reader)
 end
 
+----------------------------------------------------------------------------------------------------------------------
+function check_for_weapon_hide_by_zones()
+	for k,v in pairs(weapon_hide) do
+		if v == true then
+			return true
+		end
+	end
+	return false
+end
 
+-- Weapon functions
+function hide_weapon(zone_id)
+	printf("[WEAPON_CONTROL]:hiding weapon from zone [%s] in section [%s]!!!", zone_id, db.storage[zone_id].active_section)
+	weapon_hide[zone_id] = true
+end
+
+function restore_weapon(zone_id)
+	printf("[WEAPON_CONTROL]:restoring weapon from zone [%s] in section [%s]!!!", zone_id, db.storage[zone_id].active_section)
+	weapon_hide[zone_id] = false
+end
 
 

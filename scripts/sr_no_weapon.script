@@ -21,7 +21,8 @@ function action_no_weapon:reset_scheme()
 	
 	self.state = state_nowhere -- еще неясно, в зоне он, или нет
 	
-	self:switch_state(db.actor)
+	local actor = db.get_actor()
+	self:switch_state(actor)
 	
 	db.no_weap_zones[self.object:name()] = false
 end
@@ -33,7 +34,11 @@ function action_no_weapon:update( delta )
 	--	return
 	--end
 
-	local actor = db.actor
+
+	local actor = db.get_actor()	
+	if not actor then
+		return
+	end
 
 	if xr_logic.try_switch_to_another_section( self.object, self.st, actor ) then
 		if self.state == state_inside then
@@ -44,14 +49,20 @@ function action_no_weapon:update( delta )
 	
 	self:switch_state( actor )
 	
-	local hud = get_hud()
-	local custom_static = hud:GetCustomStatic("can_use_weapon_now")
-	if custom_static ~= nil and game.get_game_time():diffSec(self.inited_time) > 30 then
-		hud:RemoveCustomStatic("can_use_weapon_now")
+	if not IsDedicated() then
+		local hud = get_hud()
+		local custom_static = hud:GetCustomStatic("can_use_weapon_now")
+		if custom_static ~= nil and game.get_game_time():diffSec(self.inited_time) > 30 then
+			hud:RemoveCustomStatic("can_use_weapon_now")
+		end
 	end
 end
 
 function action_no_weapon:switch_state( actor )
+	if not actor then
+		return
+	end
+	
 	local state = self.state
 	--printf("on_update state[%s]", tostring(self.state))
 	
@@ -78,26 +89,44 @@ end
 
 function action_no_weapon:zone_enter()
 	self.state = state_inside
-	bind_stalker.hide_weapon(self.object:id())
-	local hud = get_hud()
-	local custom_static = hud:GetCustomStatic("can_use_weapon_now")
-	if custom_static ~= nil then
-		hud:RemoveCustomStatic("can_use_weapon_now")
+	
+	if IsGameTypeSingle() then
+		bind_stalker.hide_weapon(self.object:id())
+	else
+		mp_bind_actor.hide_weapon(self.object:id())
 	end
+	
+	if not IsDedicated() then
+		local hud = get_hud()
+		local custom_static = hud:GetCustomStatic("can_use_weapon_now")
+		if custom_static ~= nil then
+			hud:RemoveCustomStatic("can_use_weapon_now")
+		end
+	end
+	
 	printf("entering no weapon zone [%s]", tostring(self.object:name()))
 end
 
 function action_no_weapon:zone_leave()
 	self.state = state_outside
-	bind_stalker.restore_weapon(self.object:id())
-	local hud = get_hud()
-	local custom_static = hud:GetCustomStatic("can_use_weapon_now")
-	if db.no_weap_zones[self.object:name()] == true then
-		db.no_weap_zones[self.object:name()] = false
-	elseif custom_static == nil then
-		hud:AddCustomStatic("can_use_weapon_now", true)
-		hud:GetCustomStatic("can_use_weapon_now"):wnd():TextControl():SetTextST("st_can_use_weapon_now")
+	
+	if IsGameTypeSingle() then
+		bind_stalker.restore_weapon(self.object:id())
+	else
+		mp_bind_actor.restore_weapon(self.object:id())
 	end
+	
+	if not IsDedicated() then
+		local hud = get_hud()
+		local custom_static = hud:GetCustomStatic("can_use_weapon_now")
+		if db.no_weap_zones[self.object:name()] == true then
+			db.no_weap_zones[self.object:name()] = false
+		elseif custom_static == nil then
+			hud:AddCustomStatic("can_use_weapon_now", true)
+			hud:GetCustomStatic("can_use_weapon_now"):wnd():TextControl():SetTextST("st_can_use_weapon_now")
+		end
+	end
+	
 	printf("exiting no weapon zone [%s]", tostring(self.object:name()))
 	self.inited_time = game.get_game_time()
 end
