@@ -7,6 +7,7 @@ zone_by_name        = {}
 script_ids			= {}
 storage             = {}
 actor               = nil
+mp_actor			= nil
 actor_proxy         = actor_proxy.actor_proxy()
 heli                = {}
 camp_storage        = {}
@@ -31,6 +32,7 @@ function reset_globals()
 	script_ids			= {}
 	storage             = {}
 	actor               = nil
+	mp_actor			= nil
 	heli                = {}
 	camp_storage        = {}
 	story_by_id	        = {}
@@ -50,6 +52,19 @@ function reset_globals()
 	spawned_vertex_by_id= {}
 end
 
+-- pavel: Некий "хак" для получения текущего объекта актора.
+-- В синглплеере и на dedicated сервере возвращаем db.actor.
+-- В мультиплеере на клиентах, или если сервер не dedicated
+-- возвращаем db.mp_actor.
+function get_actor()
+	if IsGameTypeSingle() then
+		return db.actor
+	elseif IsDedicated() then
+		return db.actor
+	else
+		return db.mp_actor
+	end
+end
 
 function add_enemy( obj )
 	heli_enemies[heli_enemy_count] = obj
@@ -96,6 +111,21 @@ function del_actor()
 	del_obj( actor )
 	actor_proxy:net_destroy()
 	actor = nil
+end
+
+function add_mp_actor(obj)
+	if obj == nil then
+		printf_msg('empty obj')
+	end
+	mp_actor = obj
+	add_obj(obj)
+end
+
+function del_mp_actor()
+	if mp_actor ~= nil then
+		del_obj(mp_actor)
+		mp_actor = nil
+	end
 end
 
 
