@@ -51,6 +51,10 @@ end
 function mp_actor_binder:update(delta)
 	object_binder.update(self, delta)
 	
+	if not db.mp_actor or db.mp_actor:id() ~= self.object:id() then
+		return
+	end
+	
 	-- Апдейт прятание оружия игрока в зоне sr_no_weapon
 	if check_for_weapon_hide_by_zones() == true then
 		if self.weapon_hide == false then
