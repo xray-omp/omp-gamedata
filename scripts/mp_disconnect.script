@@ -8,6 +8,7 @@ end
 function after_remove_objects()
 	mp_bind_actor.reset_globals()
 	mp_bind_single_actor.reset_globals()
+	ph_door.reset_globals()
 	
 	-- delete db.actor from actor proxy
 	if db.actor ~= nil then

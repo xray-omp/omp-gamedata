@@ -3,7 +3,9 @@ local M_SCRIPT_CUSTOM_EVENT = 2
 local EVENTS =
 {
 	INIT_EVENT = 1, -- for single actor
-	PLAYER_INIT_EVENT = 2
+	PLAYER_INIT_EVENT = 2,
+	DOOR_USE = 3,
+	DOOR_CHANGE_SECTION = 4
 }
 
 --
@@ -51,7 +53,10 @@ function process_client_events()
 			-- init event for single actor object
 
 		elseif type == EVENTS.PLAYER_INIT_EVENT then
-			--
+			mp_doors_sync.cl_process_all_door_sections(P)
+
+		elseif type == EVENTS.DOOR_CHANGE_SECTION then
+			mp_doors_sync.cl_process_door_section(P)
 		end
 
 		script_events.pop_last_client_event()
@@ -75,7 +80,11 @@ function process_server_events()
 
 		elseif type == EVENTS.PLAYER_INIT_EVENT then
 			local packet = gen_event('PLAYER_INIT_EVENT')
-			send_to_client(e.SenderID, packet)			
+			mp_doors_sync.sv_write_all_door_sections(packet)
+			send_to_client(e.SenderID, packet)
+			
+		elseif type == EVENTS.DOOR_USE then
+			mp_doors_sync.sv_process_use_door_event(e.SenderID, P)
 		end
 
 		script_events.pop_last_server_event()

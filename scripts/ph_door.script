@@ -6,6 +6,15 @@
 -- Доработка: Oleg Kreptul (Haron) haronk@ukr.net
 ----------------------------------------------------------------------------------------------------
 
+_g_doors = {}
+_g_doors_count = 0
+
+local DISTANCE_SQR = 10 * 10
+
+function reset_globals()
+	_g_doors = {}
+	_g_doors_count = 0
+end
 
 class "action_door"
 function action_door:__init(obj, storage)
@@ -13,6 +22,9 @@ function action_door:__init(obj, storage)
 	self.object = obj
 	self.st = storage
 	self.snd_obj = nil
+	
+	_g_doors[obj:id()] = true
+	_g_doors_count = _g_doors_count + 1
 	
 	storage.door_action = self
 end
@@ -65,10 +77,34 @@ function action_door:update(delta)
 	--printf("_bp: action_door:update()", delta)
 	if not self.initialized then
 		abort("object '%s': door failed to initialize", self.object:name())
+		return
 	end
 
-	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+	if OnServer() and xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
 		return
+	end
+
+	if IsGameTypeSingle() then
+		return
+	end
+	
+	-- set tip text if player can't open the door
+	if not OnServer() and
+		db.mp_actor ~= nil and 
+		self.object:position():distance_to_sqr(db.mp_actor:position()) < DISTANCE_SQR
+	then
+		if self.st.on_use ~= nil then
+			if xr_logic.pick_section_from_condlist(db.mp_actor, self.object, self.st.on_use.condlist) == nil then
+				self.object:set_tip_text(self.st.tip_unlock)
+			elseif self.show_tips then
+				if self.st.locked == true and self.st.tip_unlock then
+					self.object:set_tip_text(self.st.tip_unlock)
+				end			
+				if self.st.tip_open then
+					self.object:set_tip_text(self.st.tip_open)
+				end
+			end
+		end
 	end
 end
 
@@ -236,37 +272,67 @@ function action_door:close_door(disable_snd)
 	end
 end
 
-function action_door:try_switch()
+function action_door:try_switch(npc)
 	--printf("_bp: action_door: object '%s': try_switch", self.object:name())
 	if self.st.on_use then		
 		if xr_logic.switch_to_section(self.object, self.st.ini,
-		   xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.on_use.condlist)) then
+		   xr_logic.pick_section_from_condlist(npc, self.object, self.st.on_use.condlist)) then
 			return true
 		end
 	end
 	return false
 end
 
-function action_door:use_callback(door, actor)
+function action_door:use_callback_single()
 	if self.st.locked then
 		if self.st.snd_open_start then
             xr_sound.set_sound_play(self.object:id(), self.st.snd_open_start)
 		end
 	end
 
-	if self:try_switch() then
+	self:try_switch(db.actor)
+end
+
+function action_door:use_callback(door, actor)
+	if IsGameTypeSingle() then
+		self:use_callback_single()
 		return
 	end
 
---	local angle = self.joint:get_axis_angle(90)
+	-- multiplayer
+	if IsDedicated() then
+		self:try_switch(db.actor)
+		return
+	end
 
---	if angle - self.low_limits > self.hi_limits - angle then
---		self:open_door(false)
---	else
---		self:close_door(false)
---	end
+	if self.st.on_use ~= nil then
+		if xr_logic.pick_section_from_condlist(actor, self.object, self.st.on_use.condlist) == nil then			
+			-- set tip text if player can't open the door
+			self.object:set_tip_text(self.st.tip_unlock)
+			return
+		end
+	end
+
+	if self.st.locked then
+		if self.st.snd_open_start then
+			xr_sound.set_sound_play(self.object:id(), self.st.snd_open_start)
+		end
+		return
+	end
+	
+	-- send event
+	mp_doors_sync.send_use_door_event(self.object:id())
 end
-function action_door:hit_callback(obj, amount, local_direction, who, bone_index)
+
+function action_door:switch_section(section)	
+	xr_logic.switch_to_section(self.object, self.st.ini, section)
+end
+
+function action_door:hit_callback(obj, amount, local_direction, who, bone_index)	
+	if not IsGameTypeSingle() and OnClient() then
+		return
+	end
+
 	local who_name
 	if who then
 		who_name = who:name()
@@ -354,7 +420,7 @@ function try_to_open_door(npc)
 				local action = db.storage[id].ph_door.door_action					
 				if action.st.not_for_npc == false and action.st.closed == true then
 					--printf("OPEN DOOR")
-					action:use_callback()
+					action:use_callback_single()
 					opened_doors[id] = true
 				end
 			end			
@@ -373,7 +439,7 @@ function try_to_close_door(npc, doors)
 				local action = db.storage[id].ph_door.door_action					
 				if action.st.not_for_npc == false and action.st.closed ~= true then
 					--printf("CLOSE DOOR")
-					action:use_callback()
+					action:use_callback_single()
 					closed_doors[id] = true
 				end
 			end			
