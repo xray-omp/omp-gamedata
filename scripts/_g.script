@@ -20,6 +20,15 @@ function empty	(container)
 	return			(true)
 end
 
+-- Общие функции для string
+
+function starts_with(str, start)
+	return str:sub(1, #start) == start
+ end
+ 
+function ends_with(str, ending)
+	return ending == "" or str:sub(-#ending) == ending
+end
 
 schemes = {} -- соответствие схем модулям
 stypes = {} -- типv схем
