@@ -1729,3 +1729,9 @@ function upgrade_hint_kardan(actor, npc, p)
 
 	return can_upgrade >= 2
 end
+
+--------------------------------------------------------------------------------
+
+function actor_has_item_mp(actor, npc, p)
+	return p[1] ~= nil and actor and actor:object( p[1] ) ~= nil
+end
