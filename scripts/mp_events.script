@@ -1,0 +1,86 @@
+local M_SCRIPT_CUSTOM_EVENT = 2
+
+local EVENTS =
+{
+	INIT_EVENT = 1, -- for single actor
+	PLAYER_INIT_EVENT = 2
+}
+
+--
+
+function gen_event(type)
+	local P = net_packet()
+	P:w_begin(M_SCRIPT_CUSTOM_EVENT)
+	P:w_u8(EVENTS[type])
+	return P
+end
+
+function send_to_server(P)
+	script_events.send_to_server(P)
+end
+
+function send_to_client(clientId, P)
+	script_events.send_to_client(clientId, P)
+end
+
+function send_broadcast(P)
+	script_events.send_broadcast(P)
+end
+
+--
+
+function cl_send_request_init_event()
+	send_to_server(gen_event('INIT_EVENT'))
+end
+
+function cl_send_request_player_init_event()
+	send_to_server(gen_event('PLAYER_INIT_EVENT'))
+end
+
+--
+
+function process_client_events()
+	while script_events.get_size_client_events() > 0 do
+		--printf_msg('CL: start process event')
+		local P = script_events.get_last_client_event()
+		local type = P:r_u8()
+		
+		--printf_msg('event type: %d', type)
+
+		if type == EVENTS.INIT_EVENT then
+			-- init event for single actor object
+
+		elseif type == EVENTS.PLAYER_INIT_EVENT then
+			--
+		end
+
+		script_events.pop_last_client_event()
+		--printf_msg('CL: stop process event')
+	end
+end
+
+--
+
+function process_server_events()	
+	while script_events.get_size_server_events() > 0 do
+		-- printf_msg('SV: start process event')
+		local e = script_events.get_last_server_event()
+		local P = e.Packet
+		local type = P:r_u8()
+
+		if type == EVENTS.INIT_EVENT then
+			-- init event for single actor object
+			local packet = gen_event('INIT_EVENT')
+			send_to_client(e.SenderID, packet)
+
+		elseif type == EVENTS.PLAYER_INIT_EVENT then
+			local packet = gen_event('PLAYER_INIT_EVENT')
+			send_to_client(e.SenderID, packet)			
+		end
+
+		script_events.pop_last_server_event()
+		--printf_msg('SV: stop process event')
+	end
+end
+
+--

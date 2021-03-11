@@ -4,6 +4,12 @@ function actor_init(npc)
 	printf_msg("bind single actor")
 end
 
+local cl_init_event_request_sended = false
+
+function reset_globals()
+	cl_init_event_request_sended = false
+end
+
 ----------------------------------------------------------------------------------------------------------------------
 class "actor_binder" (object_binder)
 
@@ -41,6 +47,19 @@ end
 
 function actor_binder:update(delta)
 	object_binder.update(self, delta)
+
+	if OnServer() then
+		mp_events.process_server_events()
+	end
+
+	if OnClient() then
+		mp_events.process_client_events()
+	end
+	
+	if OnClient() and not cl_init_event_request_sended then
+		mp_events.cl_send_request_init_event()
+		cl_init_event_request_sended = true
+	end
 
 	--' Апдейт саундменеджера
 	xr_sound.update(self.object:id())

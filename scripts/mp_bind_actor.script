@@ -1,5 +1,10 @@
 
 local weapon_hide = {}
+local cl_init_event_request_sended = false
+
+function reset_globals()
+	cl_init_event_request_sended = false
+end
 
 ----------------------------------------------------------------------------------------------------------------------
 class "mp_actor_binder" (object_binder)
@@ -28,7 +33,7 @@ end
 
 function mp_actor_binder:net_destroy()
 	printf_msg("[%s] net_destroy", self.object:name())
-	-- net_destroy РјРѕР¶РµС‚ Р±С‹С‚СЊ РІС‹Р·С‹РІР°С‚СЊ РїРѕСЃР»Рµ СЂРµСЃРїР°РІРЅР° Рё СѓСЃС‚Р°РЅРѕРІРєРё РЅРѕРІРѕРіРѕ mp_actor
+	-- net_destroy может быть вызывать после респавна и установки нового mp_actor
 	if db.mp_actor and db.mp_actor:id() == self.object:id() then
 		db.del_mp_actor()
 	end
@@ -55,7 +60,12 @@ function mp_actor_binder:update(delta)
 		return
 	end
 	
-	-- РђРїРґРµР№С‚ РїСЂСЏС‚Р°РЅРёРµ РѕСЂСѓР¶РёСЏ РёРіСЂРѕРєР° РІ Р·РѕРЅРµ sr_no_weapon
+	if OnClient() and not cl_init_event_request_sended then
+		mp_events.cl_send_request_player_init_event()
+		cl_init_event_request_sended = true
+	end
+
+	-- Апдейт прятание оружия игрока в зоне sr_no_weapon
 	if check_for_weapon_hide_by_zones() == true then
 		if self.weapon_hide == false then
 			self.object:hide_weapon()
