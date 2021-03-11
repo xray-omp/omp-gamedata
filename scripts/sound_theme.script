@@ -108,7 +108,9 @@ function npc_sound:init_npc(npc)
 		end
 	end
 	if self.npc[npc_id].max < 0 then
-		abort("Couldnt find sounds %s with prefix %s", tostring(self.path), npc:sound_prefix())
+		if IsGameTypeSingle() or not IsDedicated() then
+			abort("Couldnt find sounds %s with prefix %s", tostring(self.path), npc:sound_prefix())
+		end
 	end
 
 
