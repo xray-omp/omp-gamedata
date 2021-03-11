@@ -23,8 +23,10 @@ function action_door:__init(obj, storage)
 	self.st = storage
 	self.snd_obj = nil
 	
-	_g_doors[obj:id()] = true
-	_g_doors_count = _g_doors_count + 1
+	if not IsGameTypeSingle() then
+		_g_doors[obj:id()] = true
+		_g_doors_count = _g_doors_count + 1
+	end
 	
 	storage.door_action = self
 end
@@ -80,19 +82,20 @@ function action_door:update(delta)
 		return
 	end
 
-	if OnServer() and xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+	if IsGameTypeSingle() then
+		xr_logic.try_switch_to_another_section(self.object, self.st, db.actor)
 		return
 	end
 
-	if IsGameTypeSingle() then
-		return
+	if OnServer() then
+		xr_logic.try_switch_to_another_section(self.object, self.st, db.actor)
 	end
 	
 	-- set tip text if player can't open the door
-	if not OnServer() and
-		db.mp_actor ~= nil and 
-		self.object:position():distance_to_sqr(db.mp_actor:position()) < DISTANCE_SQR
-	then
+	if not IsDedicated() and db.mp_actor ~= nil then
+		if self.object:position():distance_to_sqr(db.mp_actor:position()) > DISTANCE_SQR then
+			return
+		end
 		if self.st.on_use ~= nil then
 			if xr_logic.pick_section_from_condlist(db.mp_actor, self.object, self.st.on_use.condlist) == nil then
 				self.object:set_tip_text(self.st.tip_unlock)
