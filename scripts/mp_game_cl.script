@@ -2,6 +2,6 @@
 function on_connected()
 	if OnClient() then
 		print_msg("on_connected")
-		_g.start_game_callback()
+		start_game_callback()
 	end
 end

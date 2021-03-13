@@ -533,7 +533,9 @@ function npc_in_actor_frustrum(npc)
 end
 
 function start_game_callback()
-	aa = alife()
+	if OnServer() then
+		aa = alife()
+	end
 
 	squad_community_by_behaviour = {
 		["stalker"]							= "stalker",
