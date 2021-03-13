@@ -81,6 +81,9 @@ end
 
 function mp_actor_binder:on_item_take(obj)
 	printf_msg("[%s] take item [%s]", self.object:name(), obj:name())
+	if isArtefact(obj) then
+		xr_statistic.inc_founded_artefacts_counter(obj:id())
+	end
 end
 
 function mp_actor_binder:on_item_drop(obj)
