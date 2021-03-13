@@ -5,7 +5,8 @@ local EVENTS =
 	INIT_EVENT = 1, -- for single actor
 	PLAYER_INIT_EVENT = 2,
 	DOOR_USE = 3,
-	DOOR_CHANGE_SECTION = 4
+	DOOR_CHANGE_SECTION = 4,
+	TRADE_CONFIG = 5
 }
 
 --
@@ -54,9 +55,13 @@ function process_client_events()
 
 		elseif type == EVENTS.PLAYER_INIT_EVENT then
 			mp_doors_sync.cl_process_all_door_sections(P)
+			mp_trade_sync.cl_process_all_trade_configs(P)
 
 		elseif type == EVENTS.DOOR_CHANGE_SECTION then
 			mp_doors_sync.cl_process_door_section(P)
+
+		elseif type == EVENTS.TRADE_CONFIG then
+			mp_trade_sync.cl_process_trade_config(P)
 		end
 
 		script_events.pop_last_client_event()
@@ -81,6 +86,7 @@ function process_server_events()
 		elseif type == EVENTS.PLAYER_INIT_EVENT then
 			local packet = gen_event('PLAYER_INIT_EVENT')
 			mp_doors_sync.sv_write_all_door_sections(packet)
+			mp_trade_sync.sv_write_all_trade_configs(packet)
 			send_to_client(e.SenderID, packet)
 			
 		elseif type == EVENTS.DOOR_USE then

@@ -16,6 +16,10 @@ function trade_init(npc, cfg)
 	trade_manager[npc:id()].cfg_ltx = cfg
 	trade_manager[npc:id()].config = ini_file(cfg)
 
+	if not IsGameTypeSingle() and OnServer() then
+		mp_trade_sync.sv_set_trade(npc, cfg)
+	end
+
 	-- коэфициенты покупки
 	local str = utils.cfg_get_string(trade_manager[npc:id()].config, "trader", "buy_condition", npc, true, "")
 	if str == nil then
@@ -208,6 +212,10 @@ function load(obj, packet)
 end
 ----------- NOT TO DELETE!!!!!!!!! called from engine
 function get_buy_discount(npc_id)
+	if not IsGameTypeSingle() then
+		return 1
+	end
+
 	local str = utils.cfg_get_string(trade_manager[npc_id].config, "trader", "discounts", nil, false, "", "")
 	if(str=="") then
 		return 1
@@ -219,6 +227,10 @@ function get_buy_discount(npc_id)
 end
 ----------- NOT TO DELETE!!!!!!!!! called from engine
 function get_sell_discount(npc_id)
+	if not IsGameTypeSingle() then
+		return 1
+	end
+	
 	local str = utils.cfg_get_string(trade_manager[npc_id].config, "trader", "discounts", nil, false, "", "")
 	if(str=="") then
 		return 1
