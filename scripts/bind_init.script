@@ -21,3 +21,14 @@ function actor_init(obj)
 		mp_bind_single_actor.actor_init(obj)
 	end
 end
+function monster_init(obj)
+	if IsGameTypeSingle() then
+		bind_monster.bind(obj)
+	else
+		if OnServer() then
+			bind_monster.bind(obj)
+		else
+			obj:bind_object(mp_bind_monster_cl.cl_monster_binder(obj))
+		end
+	end
+end
