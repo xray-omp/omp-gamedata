@@ -175,7 +175,10 @@ function generic_object_binder:death_callback(victim, who)
 	xr_combat_ignore.fighting_with_actor_npcs[self.object:id()] = nil
 
 	self:hit_callback(victim, 1, vector():set(0,0,0), who, "from_death_callback")
-	if who:id() == db.actor:id() then
+
+	-- статистика для сингла и для серверного игрока, если это не удаленный сервер
+	local actor = db.get_actor()
+	if actor and who:id() == actor:id() then
 		xr_statistic.inc_killed_monsters_counter()
 		xr_statistic.set_best_monster(self.object)
 	end
@@ -191,7 +194,11 @@ function generic_object_binder:death_callback(victim, who)
 	local h = hit()
 	h.draftsman = self.object
 	h.type = hit.fire_wound
-	h.direction = db.actor:position():sub(self.object:position())
+	if IsGameTypeSingle() then -- для сингла оставили направление относительно актора
+		h.direction = db.actor:position():sub(self.object:position())
+	else
+		h.direction = who:position():sub(self.object:position())
+	end
 	h:bone("pelvis")
 	h.power = 1
 	h.impulse = 10
@@ -209,7 +216,9 @@ end
 function generic_object_binder:hit_callback(obj, amount, local_direction, who, bone_index)
 --	printf("HIT_CALLBACK: [%s] amount[%s]", obj:name(), amount)
 
-	if(who:id()==db.actor:id()) then
+	-- статистика для сингла и для серверного игрока, если это не удаленный сервер
+	local actor = db.get_actor()
+	if actor and who:id() == actor:id() then
 		xr_statistic.set_best_weapon(amount)
 	end
 

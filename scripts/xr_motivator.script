@@ -227,9 +227,14 @@ end
 function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_index)
 	-- FIXME: коллбеки неплохо было бы регистрировать в общем storage, а не посхемно...
 	-- просто всегда ставить их при включении схемы и снимать при отключении.
-	if(who:id()==db.actor:id()) then
-		xr_statistic.set_best_weapon(amount)
 
+	-- статистика для сингла и для серверного игрока, если это не удаленный сервер
+	local actor = db.get_actor()
+	if actor and who:id() == actor:id() then
+		xr_statistic.set_best_weapon(amount)
+	end
+
+	if(who:id()==db.actor:id()) then
 --[[
 		local se_obj = alife():object(obj:id())
 		if se_obj and se_obj.m_smart_terrain_id ~= 65535 and amount > 0 then
@@ -286,6 +291,10 @@ end
 
 function motivator_binder:death_callback(victim, who)
 	self:hit_callback(victim, 1, vector():set(0,0,0), who, "from_death_callback")
+
+	if not IsGameTypeSingle() and OnServer() then
+		mp_trade_sync.sv_remove_trade(self.object)
+	end
 
 	xrs_dyn_music.npc_table[self.object:id()] = nil
 	xr_combat_ignore.fighting_with_actor_npcs[self.object:id()] = nil
