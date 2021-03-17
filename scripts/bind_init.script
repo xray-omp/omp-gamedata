@@ -1,6 +1,8 @@
 
 function mp_actor_init (obj)
-	if level.game_id() ~= game_types.eGameIDFreeMp then
+	if 	level.game_id() ~= game_types.eGameIDFreeMp and
+		level.game_id() ~= game_types.eGameIDRolePlay
+	then
 		return
 	end
 	if not IsDedicated() then	
