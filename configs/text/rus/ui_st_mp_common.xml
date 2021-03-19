@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_server_shutdown">
+		<text>сервер был выключен</text>
+	</string>
+	<string id="st_roleplay">
+		<text>Role Play</text>
+	</string>
+	<string id="st_freemp">
+		<text>Свободный режим</text>
+	</string>
+</string_table>
