@@ -531,7 +531,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.path_walk 	= st.path_name
 	st.path_look 	= utils.cfg_get_string(ini, section, "path_look", npc, false, gulag_name)
 
-	if st.path_walk == st.path_look then
+	if st.path_walk == st.path_look and IsGameTypeSingle() then
 		abort("You are trying to set 'path_look' equal to 'path_walk' in section [%s] for npc [%s]", section, npc:name())
 	end
 
