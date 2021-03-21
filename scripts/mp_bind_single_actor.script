@@ -61,6 +61,8 @@ function actor_binder:update(delta)
 		cl_init_event_request_sended = true
 	end
 
+	mp_artefacts_respawner.try_respawn()
+
 	--' Апдейт саундменеджера
 	xr_sound.update(self.object:id())
 end
