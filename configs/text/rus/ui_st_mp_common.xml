@@ -3,6 +3,9 @@
 	<string id="st_server_shutdown">
 		<text>сервер был выключен</text>
 	</string>
+	<string id="st_lost_connection">
+		<text>потеряно соединение с сервером</text>
+	</string>
 	<string id="st_roleplay">
 		<text>Role Play</text>
 	</string>
