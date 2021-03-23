@@ -58,7 +58,7 @@ function generic_object_binder:update(delta)
 	end
 
 
-	self.object:set_tip_text("")
+	-- self.object:set_tip_text("")
 	local st = db.storage[self.object:id()]
 	if st ~= nil and st.active_scheme ~= nil then
 		xr_logic.try_switch_to_another_section(self.object, st[st.active_scheme], db.actor)
