@@ -48,7 +48,6 @@ function generic_object_binder:update(delta)
 		xr_combat_ignore.fighting_with_actor_npcs[self.object:id()] = nil
 	end
 
-	local squad = get_object_squad(self.object)
 	local object_alive = self.object:alive()
 	--' printf("_bp: generic_object_binder: UPDATE [name='%s' time=%d]",
 	--'	self.object:name(), time_global())
@@ -63,7 +62,11 @@ function generic_object_binder:update(delta)
 	if st ~= nil and st.active_scheme ~= nil then
 		xr_logic.try_switch_to_another_section(self.object, st[st.active_scheme], db.actor)
 	end
-	-- Апдейт отряда
+	-- Апдейт отряда (в мп отключили)
+	local squad = nil
+	if IsGameTypeSingle() then
+		squad = get_object_squad(self.object)
+	end
 	if squad ~= nil then
 		if squad:commander_id() == self.object:id() then
 			squad:update()
