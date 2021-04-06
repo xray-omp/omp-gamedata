@@ -28,7 +28,6 @@ function cl_monster_binder:reinit()
 
 	self.object:set_callback(callback.hit, self.hit_callback, self)
 	self.object:set_callback(callback.death, self.death_callback, self)
-	self.object:set_callback(callback.sound, self.hear_callback, self)
 end
 
 function cl_monster_binder:net_spawn(sobject)
@@ -61,7 +60,6 @@ end
 function cl_monster_binder:net_destroy()
 	self.object:set_callback(callback.death, nil)
 	self.object:set_callback(callback.hit, nil)
-	self.object:set_callback(callback.sound, nil)
 	xr_sound.stop_sounds_by_id(self.object:id())
 
 	object_binder.net_destroy(self)
