@@ -34,6 +34,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 
 function mp_player_binder:update(delta)
+	object_binder.update(self, delta)
 	
 end
 
