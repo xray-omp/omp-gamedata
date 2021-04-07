@@ -80,7 +80,7 @@ function action_no_weapon:switch_state( actor )
 			--printf("on_update2 state[%s]", tostring(self.state))
 			return
 		end
-		local weap_obj = db.actor:active_item()
+		local weap_obj = actor:active_item()
 		if weap_obj ~= nil and isWeapon (weap_obj) ~= false then
 			printf("no weapon zone [%s] actor is inside, but with weapon active", tostring(self.object:name()))
 		end
