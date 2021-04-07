@@ -216,14 +216,15 @@ function npc_sound:play(npc_id, faction, point, msg)
 	local table_id = self.played_id + 1
 	local snd = self.sound_path[npc_id][table_id]
 	-- проверка на существование звука дублирующего основной по ПДА. Если он есть то играть его.
+	local actor = db.get_actor()
 	local f = getFS()
-	if snd and f:exist("$game_sounds$", snd.."_pda.ogg") ~= nil and npc:position():distance_to_sqr(db.actor:position()) >= 100 then
+	if actor and snd and f:exist("$game_sounds$", snd.."_pda.ogg") ~= nil and npc:position():distance_to_sqr(actor:position()) >= 100 then
 		if self.pda_snd_obj ~= nil and self.pda_snd_obj:playing() then
 			self.pda_snd_obj:stop()
 		end
 		self.pda_snd_obj = sound_object(snd.."_pda")
 		--play_at_pos(CScriptGameObject *object, const Fvector &position, float delay, int flags)
-		self.pda_snd_obj:play_at_pos(db.actor, vector():set(0,0,0), self.delay_sound, sound_object.s2d)
+		self.pda_snd_obj:play_at_pos(actor, vector():set(0,0,0), self.delay_sound, sound_object.s2d)
 		self.pda_snd_obj.volume = 0.8
 	end
 	--printf("snd_path is "..tostring(self.sound_path[npc_id][table_id]))
@@ -441,10 +442,16 @@ function actor_sound:play(npc, faction, point, msg)
 		--' Пропускаем.
 		return false
 	end
+
+	local actor = db.get_actor()
+	if actor == nil then
+		return false
+	end
+
 	local snd = self.sound[self.played_id]
 	self.snd_obj = sound_object(snd)
 	self.snd_obj.volume = 0.8
-	self.snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
+	self.snd_obj:play_at_pos(actor, vector():set(0,0,0), 0, sound_object.s2d)
 	self.snd_obj.volume = 0.8
 	local snd_st, num_copy = string.gsub(snd, "\\", "_")
 --[[
@@ -623,12 +630,18 @@ function object_sound:play(obj_id, faction, point, msg)
 		--' Пропускаем.
 		return false
 	end
+
+	local actor = db.get_actor()
+	if actor == nil then
+		return false
+	end
+
 --	printf("object played_id = %s", self.played_id)
 	local snd = self.sound[self.played_id]
 	local f = getFS()
-	if snd and f:exist("$game_sounds$", snd.."_pda.ogg") ~= nil and obj:position():distance_to_sqr(db.actor:position()) >= 5 then
+	if snd and f:exist("$game_sounds$", snd.."_pda.ogg") ~= nil and obj:position():distance_to_sqr(actor:position()) >= 5 then
 		self.pda_snd_obj = sound_object(snd.."_pda")
-		self.pda_snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
+		self.pda_snd_obj:play_at_pos(actor, vector():set(0,0,0), 0, sound_object.s2d)
 		self.pda_snd_obj.volume = 0.8
 	end
 	self.snd_obj = sound_object(snd)
@@ -799,7 +812,7 @@ function load_sound()
 	for i=0,n-1 do
 		result, section, value  = snd_ini:r_line("list",i,"","")
 
-		local type = utils.cfg_get_string(snd_ini, section, "type", db.actor, true, "")
+		local type = utils.cfg_get_string(snd_ini, section, "type", nil, true, "")
 
 		--' Определяем тип звука.
 		if type == "npc" then
