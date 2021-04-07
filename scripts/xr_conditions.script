@@ -71,7 +71,8 @@ end
 
 -- проверка, что актер жив
 function actor_alive(actor, npc)
-	if db.actor and db.actor:alive() then
+	local actor = db.get_actor()
+	if actor and actor:alive() then
 		return true
 	end
 	return false
