@@ -45,9 +45,13 @@ end
 function generic_physics_binder:update(delta)
 	object_binder.update(self, delta)
 
-	if not self.initialized and db.actor then
+	local actor = db.get_actor()
+	if not self.initialized then
+		if not actor then
+			return
+		end
 		self.initialized = true
-		xr_logic.initialize_obj(self.object, self.st, self.loaded, db.actor, modules.stype_item)
+		xr_logic.initialize_obj(self.object, self.st, self.loaded, actor, modules.stype_item)
 	end
 
 
@@ -103,9 +107,11 @@ function generic_physics_binder:net_destroy()
 	if st.active_scheme then
 		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
 	end
-	local on_offline_condlist = db.storage[self.object:id()] and db.storage[self.object:id()].overrides and db.storage[self.object:id()].overrides.on_offline_condlist
-	if on_offline_condlist ~= nil then
-		xr_logic.pick_section_from_condlist(db.actor, self.object, on_offline_condlist)
+	if IsGameTypeSingle() or OnServer() then
+		local on_offline_condlist = db.storage[self.object:id()] and db.storage[self.object:id()].overrides and db.storage[self.object:id()].overrides.on_offline_condlist
+		if on_offline_condlist ~= nil then
+			xr_logic.pick_section_from_condlist(db.actor, self.object, on_offline_condlist)
+		end
 	end
 	if self.particle ~= nil then
 		self.particle:stop()
