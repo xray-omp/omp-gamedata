@@ -8,6 +8,7 @@ script_ids			= {}
 storage             = {}
 actor               = nil
 mp_actor			= nil
+players				= {}
 actor_proxy         = actor_proxy.actor_proxy()
 heli                = {}
 camp_storage        = {}
@@ -33,6 +34,7 @@ function reset_globals()
 	storage             = {}
 	actor               = nil
 	mp_actor			= nil
+	players				= {}
 	heli                = {}
 	camp_storage        = {}
 	story_by_id	        = {}
@@ -125,6 +127,17 @@ function del_mp_actor()
 	if mp_actor ~= nil then
 		del_obj(mp_actor)
 		mp_actor = nil
+	end
+end
+
+function add_player( obj )
+	server_msg("adding player %d %s", obj:id(), obj:name())
+	players[obj:id()] = obj
+end
+
+function del_player( obj )
+	if obj ~= nil then
+		players[obj:id()] = nil
 	end
 end
 
