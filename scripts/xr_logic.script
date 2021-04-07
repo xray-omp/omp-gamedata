@@ -641,7 +641,7 @@ function pick_section_from_condlist(actor, npc, condlist)
 			-- Условия выполнены. Независимо от того, задана ли секция, нужно проставить требуемые
 			-- infoportions:
 			for inum, infop in pairs(cond.infop_set) do
-				if db.actor == nil then
+				if db.get_actor() == nil then
 					abort("TRYING TO SET INFOS THEN ACTOR IS NIL")
 				end
 				if infop.func then
@@ -710,7 +710,9 @@ function switch_to_section(npc, ini, section)
 end
 
 function see_actor(npc)
-	return npc:alive() and npc:see(db.actor)
+	local actor = db.get_actor()
+	if actor == nil then return false end
+	return npc:alive() and npc:see(actor)
 end
 
 function cond_name(cond, etalon)
@@ -1488,8 +1490,9 @@ function initialize_obj(obj, st, loaded, actor, stype)
 		local sect = xr_logic.determine_section_to_activate(obj, ini, "logic", actor)
 		xr_logic.activate_by_section(obj, ini, sect,  st.gulag_name, false)
 		local relation = utils.cfg_get_string(ini, "logic", "relation", obj, false, "")
-		if(relation~=nil) then
-			obj:set_relation(game_object[relation], db.actor)
+		local actor = db.get_actor()
+		if relation~=nil and actor ~= nil then
+			obj:set_relation(game_object[relation], actor)
 		end
 		local sympathy = utils.cfg_get_number(ini, "logic", "sympathy", obj, false)
 		if(sympathy~=nil) then
