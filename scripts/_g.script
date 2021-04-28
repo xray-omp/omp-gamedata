@@ -572,7 +572,7 @@ function start_game_callback()
 --		[clsid.fracture_s] 				= true,
 		[clsid.poltergeist_s] 			= true,
 		[clsid.gigant_s] 				= true,
---		[clsid.zombie_s] 				= true,
+		[clsid.zombie_s] 				= true,
 		[clsid.snork_s] 				= true,
 		[clsid.tushkano_s] 				= true,
 		[clsid.psy_dog_s] 				= true,

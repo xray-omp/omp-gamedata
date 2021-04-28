@@ -20,6 +20,7 @@ monster_classes = {
 			[clsid.dog_s] 			  = "dog",
 			[clsid.flesh_s] 		  = "flesh",
 			[clsid.gigant_s] 		  = "gigant",
+			[clsid.zombie_s] 		  = "zombie",
 			[clsid.poltergeist_s] 	  = "poltergeist",
 			[clsid.psy_dog_s] 		  = "psy_dog",
 			[clsid.pseudodog_s]		  = "pseudodog",
