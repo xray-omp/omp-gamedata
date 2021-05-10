@@ -21,7 +21,10 @@ function action_idle:update(delta)
 	--	return
 	--end
 
-	local actor = db.actor
+	local actor = db.get_actor()
+	if actor == nil then
+		return
+	end
 
 	if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
 		return
