@@ -890,3 +890,15 @@ function show_all_ui(show)
 			db.actor:disable_hit_marks(true)
 	end
 end
+
+function get_nearest_actor(pos)
+	local nearest_actor = nil
+	local min_distance = 100000
+	for _, player in pairs(db.players) do
+		local distance = pos:distance_to_sqr(pos)
+		if distance < min_distance then
+			nearest_actor = player
+		end
+	end
+	return nearest_actor
+end

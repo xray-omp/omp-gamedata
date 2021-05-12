@@ -6,7 +6,8 @@ local EVENTS =
 	PLAYER_INIT_EVENT = 2,
 	DOOR_USE = 3,
 	DOOR_CHANGE_SECTION = 4,
-	TRADE_CONFIG = 5
+	TRADE_CONFIG = 5,
+	NPC_SOUND = 6
 }
 
 --
@@ -62,6 +63,9 @@ function process_client_events()
 
 		elseif type == EVENTS.TRADE_CONFIG then
 			mp_trade_sync.cl_process_trade_config(P)
+
+		elseif type == EVENTS.NPC_SOUND then
+			sound_theme.cl_process_npc_sound(P)
 		end
 
 		script_events.pop_last_client_event()

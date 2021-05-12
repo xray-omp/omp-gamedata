@@ -22,6 +22,7 @@ function mp_actor_binder:net_spawn(data)
 	end
 	db.del_mp_actor()
 	db.add_mp_actor(self.object)
+	db.add_player(self.object)
 	
 	weapon_hide = {}
 	self.weapon_hide = false
@@ -37,6 +38,7 @@ function mp_actor_binder:net_destroy()
 	if db.mp_actor and db.mp_actor:id() == self.object:id() then
 		db.del_mp_actor()
 	end
+	db.del_player(self.object)
 	object_binder.net_destroy(self)
 end
 ----------------------------------------------------------------------------------------------------------------------

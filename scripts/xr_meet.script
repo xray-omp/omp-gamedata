@@ -20,9 +20,9 @@ function evaluator_contact:evaluate()
 --	end
 
 	if db.actor then
-		if not db.actor:alive() then
-			return false
-		end
+		--if not db.actor:alive() then
+		--	return false
+		--end
 
 		self.a.meet_manager:update()
 
@@ -121,7 +121,11 @@ function Cmeet_manager:update_state()
 	if tostring(victim) ~= "nil" then
 		local sim = alife()
 		if sim then
-			victim = get_story_object(victim)
+			if tostring(victim) == "actor" then
+				victim = get_nearest_actor(self.npc:position())
+			else
+				victim = get_story_object(victim)
+			end
 		end
 	else
 		victim = nil
@@ -143,7 +147,7 @@ function Cmeet_manager:update_state()
 
 end
 function Cmeet_manager:set_start_distance()
-	if db.actor == nil then
+	if db.actor == nil or not IsGameTypeSingle() then
 		self.hello_passed = false
 		self.bye_passed = false
 		self.current_distance = nil
@@ -182,13 +186,32 @@ function Cmeet_manager:set_start_distance()
 end
 function Cmeet_manager:update()
 	-- Определение, в каком радиусе находимся
-	local distance = self.npc:position():distance_to(db.actor:position())
+	local actor = nil
 
-	local actor_visible = self.npc:see(db.actor)
+	if IsGameTypeSingle() then
+		actor = db.actor
+	else
+		actor = get_nearest_actor(self.npc:position())
+	end
+
+	if actor == nil then
+		return
+	end
+
+	if not IsGameTypeSingle() then
+		if self.npc:relation(actor) == game_object.enemy then
+			return
+		end
+	end
+
+	local distance = self.npc:position():distance_to(actor:position())
+	local actor_visible = self.npc:see(actor)
 
 	if actor_visible then
-		--printf("%s check distance %s <= %s <= %s", self.npc:name(), distance, tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_distance)), tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd_distance)) )
-		if distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_distance)) then
+		local close_snd_distance = tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_distance))
+		local far_snd_distance  = tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd_distance))
+		--printf_msg("%s check distance %s <= %s <= %s", self.npc:name(), distance, close_snd_distance, far_snd_distance)
+		if distance <= close_snd_distance then
 			-- Коллбек на приближение
 			-- звук при приближении
 			if self.hello_passed == false then
@@ -199,8 +222,8 @@ function Cmeet_manager:update()
 	
 				self.hello_passed = true
 			end
-	
-		elseif distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd_distance)) then
+
+		elseif distance <= far_snd_distance then
 			if self.hello_passed == true then
 				-- Коллбек на отдаление
 				-- звук при отдалении
@@ -230,6 +253,7 @@ function Cmeet_manager:update()
 		self.current_distance = "far"
 	elseif distance > self.a.reset_distance then
 		-- ресет флажков при выходе в дальний радиус CB
+		--printf_msg('[%s] RESET', self.npc:name())
 		self.hello_passed = false
 		self.bye_passed = false
 		self.current_distance = nil
@@ -245,7 +269,7 @@ function Cmeet_manager:update()
 	end
 
 	-- стартовый диалог
-	if self.a.meet_dialog ~= nil then
+	if IsGameTypeSingle() and self.a.meet_dialog ~= nil then
 		local start_dialog = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.meet_dialog)
 		if self.startdialog ~= start_dialog then
 			self.startdialog = start_dialog
@@ -486,7 +510,11 @@ reset_distance	= 30
 	-- Устанавливаем дефолты
 	local def = {}
 
-	local relation = game_relations.get_npcs_relation(npc, db.actor)
+	local relation = game_object.neutral
+	
+	if IsGameTypeSingle() then
+		relation = game_relations.get_npcs_relation(npc, db.actor)
+	end
 
 	if relation == game_object.enemy then
 		def.close_distance 		= "0"
