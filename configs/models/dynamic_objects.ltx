@@ -19,6 +19,10 @@ class       = O_DSTR_S
 remove_time     = 60; after this time  unbreaked removable bone will be removed
 script_binding      = bind_physic_object.init
 
+[physic_destroyable_object_part]:physic_destroyable_object
+script_binding      = bind_init.none
+is_part_object = true
+
 
 [physic_door]
 GroupControlSection = spawn_group
