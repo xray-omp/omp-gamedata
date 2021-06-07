@@ -102,9 +102,15 @@ function action_door:update(delta)
 			elseif self.show_tips then
 				if self.st.locked == true and self.st.tip_unlock then
 					self.object:set_tip_text(self.st.tip_unlock)
-				end			
-				if self.st.tip_open then
-					self.object:set_tip_text(self.st.tip_open)
+				end
+				if self.st.closed then
+					if self.st.tip_open then
+						self.object:set_tip_text(self.st.tip_open)
+					end
+				else
+					if self.st.tip_close then
+						self.object:set_tip_text(self.st.tip_close)
+					end
 				end
 			end
 		end
