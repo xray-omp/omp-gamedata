@@ -3382,3 +3382,11 @@ function jup_b200_count_found(actor)
 	cnt = cnt + xr_logic.pstor_retrieve(actor, "jup_b200_tech_materials_brought_counter", 0)
 	xr_logic.pstor_store(actor, "jup_b200_tech_materials_found_counter", cnt)
 end
+
+
+-- new functions for mp
+
+function log(actor, npc, p)
+	print_msg(tostring(p[1]))
+end
+
