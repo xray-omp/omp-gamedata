@@ -7,7 +7,8 @@ local EVENTS =
 	DOOR_USE = 3,
 	DOOR_CHANGE_SECTION = 4,
 	TRADE_CONFIG = 5,
-	NPC_SOUND = 6
+	NPC_SOUND = 6,
+	TELEPORT_PLAYER = 7
 }
 
 --
@@ -95,6 +96,9 @@ function process_server_events()
 			
 		elseif type == EVENTS.DOOR_USE then
 			mp_doors_sync.sv_process_use_door_event(e.SenderID, P)
+
+		elseif type == EVENTS.TELEPORT_PLAYER then
+			mp_teleport.sv_process_teleport_event(e.SenderID, P)
 		end
 
 		script_events.pop_last_server_event()

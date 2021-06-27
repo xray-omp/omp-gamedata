@@ -3390,3 +3390,9 @@ function log(actor, npc, p)
 	print_msg(tostring(p[1]))
 end
 
+function teleport_player(actor, npc, p)
+	if not db.mp_actor or db.mp_actor:id() ~= actor:id() then
+		return
+	end
+	mp_teleport.cl_send_teleport_event(p[1], p[2])
+end
