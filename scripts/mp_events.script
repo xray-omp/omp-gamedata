@@ -79,7 +79,7 @@ end
 function process_server_events()	
 	while script_events.get_size_server_events() > 0 do
 		-- printf_msg('SV: start process event')
-		local e = script_events.get_last_server_event()
+		local e = script_events.get_front_server_event()
 		local P = e.Packet
 		local type = P:r_u8()
 
@@ -101,7 +101,7 @@ function process_server_events()
 			mp_teleport.sv_process_teleport_event(e.SenderID, P)
 		end
 
-		script_events.pop_last_server_event()
+		script_events.pop_front_server_event()
 		--printf_msg('SV: stop process event')
 	end
 end
