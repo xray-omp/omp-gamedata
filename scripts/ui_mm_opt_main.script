@@ -108,6 +108,7 @@ function options_dialog:SetCurrentValues()
 	opt:SetCurrentValues("key_binding")
 	opt:SaveBackupValues("key_binding")
 
+	self.dlg_sound:UpdateControls()
 	self:UpdateDependControls()
 end
 
@@ -240,6 +241,7 @@ function options_dialog:OnTabChange()
 	if ids == "video" then
 		self.dlg_video:Show(true)
 	elseif ids == "sound" then
+		self.dlg_sound:UpdateControls()
 		self.dlg_sound:Show(true)
 	elseif ids == "gameplay" then
 		self.dlg_gameplay:Show(true)

@@ -489,6 +489,21 @@
 	<string id="ui_mm_eax">
 		<text>EAX</text>
 	</string>
+	<string id="ui_mm_denoise">
+		<text>Шумоподавление</text>
+	</string>
+	<string id="ui_mm_recorder_agc">
+		<text>Авт. регулеровка громкости</text>
+	</string>
+	<string id="ui_mm_recorder_volume">
+		<text>Громкость микрофона</text>
+	</string>
+	<string id="ui_mm_players_voice_volume">
+		<text>Громкость игроков</text>
+	</string>
+	<string id="ui_mm_voice_chat">
+		<text>Голосовой чат</text>
+	</string>
 	<string id="ui_mm_fullscreen">
 		<text>Полный экран</text>
 	</string>
