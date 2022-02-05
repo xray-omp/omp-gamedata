@@ -26,6 +26,12 @@
 	</string>
 	<string id="kb_chat_team">
 		<text>Командный чат</text>
+	</string>	
+	<string id="kb_voice_chat">
+		<text>Голосовой чат</text>
+	</string>
+	<string id="kb_voice_distanec">
+		<text>Расстояние голосового чата</text>
 	</string>
 	<string id="kb_console">
 		<text>Консоль</text>
