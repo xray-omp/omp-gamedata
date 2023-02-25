@@ -47,7 +47,7 @@ end
 function process_client_events()
 	while script_events.get_size_client_events() > 0 do
 		--printf_msg('CL: start process event')
-		local P = script_events.get_last_client_event()
+		local P = script_events.get_front_client_event()
 		local type = P:r_u8()
 		
 		--printf_msg('event type: %d', type)
@@ -69,7 +69,7 @@ function process_client_events()
 			sound_theme.cl_process_npc_sound(P)
 		end
 
-		script_events.pop_last_client_event()
+		script_events.pop_front_client_event()
 		--printf_msg('CL: stop process event')
 	end
 end
